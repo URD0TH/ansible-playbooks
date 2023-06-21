@@ -1,17 +1,9 @@
 ---
 - hosts: all
 
-  become: yes
+  become: true
   tasks:
-    - name: apt
+    - name: update apt packages
       apt:
+        upgrade: yes
         update_cache: yes
-        upgrade: 'yes
-
-    # - name: Rebooting if needed...
-    #   command: shutdown -r now removes=/var/run/reboot-required
-    #   sudo: yes
-    #   async: 0
-    #   poll: 0
-    #   ignore_errors: true
-    #   register: restarted
