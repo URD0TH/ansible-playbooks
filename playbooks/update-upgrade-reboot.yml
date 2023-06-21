@@ -8,10 +8,10 @@
         update_cache: yes
         upgrade: 'yes
 
-    - name: Rebooting if needed...
-      command: shutdown -r now removes=/var/run/reboot-required
-      sudo: yes
-      async: 0
-      poll: 0
-      ignore_errors: true
-      register: restarted
+    # - name: Rebooting if needed...
+    #   command: shutdown -r now removes=/var/run/reboot-required
+    #   sudo: yes
+    #   async: 0
+    #   poll: 0
+    #   ignore_errors: true
+    #   register: restarted
