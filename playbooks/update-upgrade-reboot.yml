@@ -1,15 +1,12 @@
 ---
 - hosts: all
 
-  become: true
+  become: yes
   tasks:
-    - name: Update System Package Cache
-      apt: update_cache=yes
-      sudo: yes
-
-    - name: Upgrade System Packages
-      apt: upgrade=full
-      sudo: yes
+    - name: apt
+      apt:
+        update_cache: yes
+        upgrade: 'yes
 
     - name: Rebooting if needed...
       command: shutdown -r now removes=/var/run/reboot-required
@@ -18,8 +15,3 @@
       poll: 0
       ignore_errors: true
       register: restarted
-
-    - name: Waiting for reboot...
-      local_action: wait_for host=localhost port=2200 delay=15 state=started
-      sudo: no
-      when: restarted.change
