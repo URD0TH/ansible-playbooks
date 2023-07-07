@@ -1,6 +1,6 @@
 ---
 - name: Reiniciar servidores
-  hosts: servidores
+  hosts: all
   become: true
 
   tasks:
