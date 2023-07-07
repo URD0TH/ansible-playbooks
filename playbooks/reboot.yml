@@ -1,11 +1,14 @@
---
-- name: reboot module demo
+---
+- name: Reiniciar servidores
   hosts: all
   become: true
+
   tasks:
-    - name: reboot host(s)
-      ansible.builtin.reboot:
-        msg: "reboot by Ansible"
-        pre_reboot_delay: 5
-        post_reboot_delay: 10
-        test_command: "whoami"
+    - name: Reiniciar servidor
+      reboot:
+        reboot_timeout: 300
+        reboot_msg: "Reinicio programado por Ansible"
+      async: 0
+      poll: 0
+      ignore_errors: true
+
