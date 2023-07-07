@@ -1,13 +1,12 @@
 ---
 - name: Reiniciar servidores
-  hosts: all
+  hosts: servidores
   become: true
 
   tasks:
     - name: Reiniciar servidor
       reboot:
         reboot_timeout: 300
-        reboot_msg: "Reinicio programado por Ansible"
       async: 0
       poll: 0
       ignore_errors: true
