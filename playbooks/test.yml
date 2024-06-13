@@ -18,7 +18,7 @@
 
     - name: Verificar si hubo actualizaciones
       set_fact:
-        upgrade_available: "{{ update_result | changed }}"
+        upgrade_available: "{{ update_result.changed }}"
 
     - name: Enviar mensaje de Telegram si hay actualizaciones
       community.general.telegram:
