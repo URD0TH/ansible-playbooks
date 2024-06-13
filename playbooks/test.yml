@@ -1,0 +1,28 @@
+---
+- name: Actualizar paquetes del sistema y reiniciar si es necesario
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Actualizar todos los paquetes del sistema
+      apt:
+        update_cache: yes
+        upgrade: yes
+      register: update_result
+
+    - name: Reiniciar el servidor si es necesario
+      reboot:
+        reboot_timeout: 300
+        test_command: uptime
+      when: update_result.changed
+
+    - name: Send Telegram message after update and upgrade
+      community.general.telegram:
+        msg: |
+          Host: {{ ansible_hostname }}
+          Ansible update and upgrade tasks finished.
+          Update status: {{ update_result | failed }}
+          Upgrade status: {{ update_result | failed }}
+        token: "{{ telegram_bot_token }}"
+        chat_id: "{{ telegram_chat_id }}"
+      when: update_result.changed
