@@ -33,4 +33,4 @@
           {% else %}
           Upgrade status: No updates available
           {% endif %}
-      when: update_result.changed or upgrade_available
+      when: update_result.changed or upgrade_available or not update_result.failed
