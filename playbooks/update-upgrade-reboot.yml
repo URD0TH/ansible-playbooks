@@ -1,9 +1,15 @@
 ---
-- hosts: all
+- name: Actualizar paquetes del sistema y reiniciar
+  hosts: all
+  become: yes
 
-  become: true
   tasks:
-    - name: update apt packages
+    - name: Actualizar todos los paquetes del sistema
       apt:
-        upgrade: yes
         update_cache: yes
+        upgrade: yes
+
+    - name: Reiniciar el servidor
+      reboot:
+        reboot_timeout: 300
+        test_command: uptime
