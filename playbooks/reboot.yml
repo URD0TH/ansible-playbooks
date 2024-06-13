@@ -1,0 +1,13 @@
+---
+- name: Reiniciar servidores
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Reiniciar servidor
+      reboot:
+        reboot_timeout: 300
+      async: 0
+      poll: 0
+      ignore_errors: true
+
