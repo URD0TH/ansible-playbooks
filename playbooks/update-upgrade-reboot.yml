@@ -13,3 +13,13 @@
       reboot:
         reboot_timeout: 300
         test_command: uptime
+
+    - name: Send Telegram message if update or upgrade failed
+      community.general.telegram:
+        msg: |
+          Ansible update and upgrade tasks finished.
+          Update status: {{ update_result | failed }}
+          Upgrade status: {{ upgrade_result | failed }}
+        token: "{{ telegram_bot_token }}"
+        chat_id: "{{ telegram_chat_id }}"
+      when: update_result | failed or upgrade_result | failed

@@ -25,5 +25,4 @@
             Host: {{ ansible_hostname }}
             Ansible update and upgrade tasks finished.
             Update status: {{ 'success' if update_result.changed else 'no changes' }}
-            Upgrade status: {{ 'success' if upgrade_result.changed else 'no changes' }}
-      when: update_result.changed or upgrade_result.changed
+      when: update_result.changed
