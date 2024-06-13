@@ -10,11 +10,12 @@
         upgrade: yes
       register: update_result
 
-    - name: Reiniciar el servidor
+    - name: Reiniciar el servidor solo si es necesario
       reboot:
         reboot_timeout: 300
         test_command: uptime
       register: reboot_result
+      changed_when: reboot_result.reboot_required
 
     - name: Enviar notificación si la actualización tuvo éxito
       command: "curl -H 'Title: Actualización exitosa' -H 'Priority: low' -d 'Actualización de paquetes exitosa 😀' http://ntfy.lc.bnds.link/upgrade"
