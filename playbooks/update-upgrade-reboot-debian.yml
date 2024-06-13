@@ -1,7 +1,7 @@
 - name: Actualizar paquetes del sistema y reiniciar
   hosts: all
   become: yes
-  become_user: bnds
+  become_user: root
   become_method: sudo
    
   tasks:
