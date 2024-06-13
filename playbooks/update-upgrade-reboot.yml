@@ -9,7 +9,7 @@
         update_cache: yes
         upgrade: yes
 
-    # - name: Reiniciar el servidor
-    #   reboot:
-    #     reboot_timeout: 300
-    #     test_command: uptime
+    - name: Reiniciar el servidor
+      reboot:
+        reboot_timeout: 300
+        test_command: uptime
