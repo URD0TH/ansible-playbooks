@@ -16,14 +16,21 @@
         test_command: uptime
       when: update_result.changed
 
-    - name: Send Telegram message after update and upgrade
+    - name: Verificar si hubo actualizaciones
+      set_fact:
+        upgrade_available: "{{ update_result | changed }}"
+
+    - name: Enviar mensaje de Telegram si hay actualizaciones
       community.general.telegram:
         token: "{{ telegram_bot_token }}"
-        api_args:
-          chat_id: "{{ telegram_chat_id }}"
-          text: |
-            Host: {{ ansible_hostname }}
-            Ansible update and upgrade tasks finished.
-            Update status: {{ 'success' if update_result.changed else 'no changes' }}
-            Upgrade status: {{ 'success' if update_result.changed else 'no changes' }}
-      when: update_result.changed or upgrade_result.changed
+        chat_id: "{{ telegram_chat_id }}"
+        text: |
+          Host: {{ ansible_hostname }}
+          Ansible update and upgrade tasks finished.
+          Update status: {{ 'success' if update_result.changed else 'no changes' }}
+          {% if upgrade_available %}
+          Upgrade status: Updates available
+          {% else %}
+          Upgrade status: No updates available
+          {% endif %}
+      when: update_result.changed or upgrade_available
