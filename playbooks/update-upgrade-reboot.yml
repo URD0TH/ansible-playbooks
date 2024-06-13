@@ -8,18 +8,42 @@
       apt:
         update_cache: yes
         upgrade: yes
+      register: update_result
 
     - name: Reiniciar el servidor
       reboot:
         reboot_timeout: 300
         test_command: uptime
+      register: reboot_result
 
-    # - name: Send Telegram message if update or upgrade failed
-    #   community.general.telegram:
-    #     msg: |
-    #       Ansible update and upgrade tasks finished.
-    #       Update status: {{ update_result | failed }}
-    #       Upgrade status: {{ upgrade_result | failed }}
-    #     token: "{{ telegram_bot_token }}"
-    #     chat_id: "{{ telegram_chat_id }}"
-    #   when: update_result | failed or upgrade_result | failed
+    - name: Enviar notificación si la actualización tuvo éxito
+      uri:
+        url: "http://ntfy.hc.bnds.link/upgrade"
+        method: POST
+        body: "Actualización tuvo éxito 😀"
+        status_code: 200
+      when: update_result.changed
+
+    - name: Enviar notificación si hubo un error en la actualización
+      uri:
+        url: "http://ntfy.hc.bnds.link/upgrade"
+        method: POST
+        body: "Error al actualizar paquetes 😟"
+        status_code: 200
+      when: update_result.failed
+
+    - name: Enviar notificación si el reinicio tuvo éxito
+      uri:
+        url: "http://ntfy.hc.bnds.link/upgrade"
+        method: POST
+        body: "reinicio exitoso 😀"
+        status_code: 200
+      when: reboot_result.changed
+
+    - name: Enviar notificación si hubo un error en el reinicio
+      uri:
+        url: "http://ntfy.hc.bnds.link/upgrade"
+        method: POST
+        body: "Error al reiniciar el servidor ❌"
+        status_code: 200
+      when: reboot_result.failed
