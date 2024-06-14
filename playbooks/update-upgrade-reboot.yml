@@ -17,18 +17,18 @@
       register: reboot_result
 
     - name: Enviar notificación si la actualización tuvo éxito
-      command: "curl -H 'Title: Actualización exitosa' -H 'Priority: low' -d 'Actualización de paquetes exitosa 😀' https://ntfy.lc.bnds.link/upgrade"
+      command: "curl -H 'Title: Actualización exitosa' -H 'Priority: low' -d 'Actualización de paquetes exitosa 😀' https://ntfy.bnds.link/upgrade"
       when: update_result.changed
 
     - name: Enviar notificación si hubo un error en la actualización
-      command: "curl -H 'Title: Error en actualización' -H 'Priority: high' -d 'Error al actualizar paquetes 😟' https://ntfy.lc.bnds.link/upgrade"
+      command: "curl -H 'Title: Error en actualización' -H 'Priority: high' -d 'Error al actualizar paquetes 😟' https://ntfy.bnds.link/upgrade"
       when: update_result.failed
 
     - name: Enviar notificación si el reinicio fue necesario y tuvo éxito
-      command: "curl -H 'Title: Reinicio exitoso' -H 'Priority: low' -d 'Servidor reiniciado correctamente 🔄' https://ntfy.lc.bnds.link/upgrade"
+      command: "curl -H 'Title: Reinicio exitoso' -H 'Priority: low' -d 'Servidor reiniciado correctamente 🔄' https://ntfy.bnds.link/upgrade"
       when: reboot_result.rebooted
 
 
     - name: Enviar notificación si hubo un error en el reinicio
-      command: "curl -H 'Title: Error en reinicio' -H 'Priority: high' -d 'Error al reiniciar el servidor ❌' https//ntfy.lc.bnds.link/upgrade"
+      command: "curl -H 'Title: Error en reinicio' -H 'Priority: high' -d 'Error al reiniciar el servidor ❌' https//ntfy.bnds.link/upgrade"
       when: reboot_result.failed
