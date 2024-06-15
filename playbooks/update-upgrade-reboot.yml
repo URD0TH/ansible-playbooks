@@ -10,27 +10,21 @@
         upgrade: yes
       register: update_result
 
-    - name: revisar si es necesario reiniciar
-    ansible.builtin.stat:
-      path: /var/run/reboot-required
-      get_checksum: no
-    register: reboot_required_file
+    - name: Verificar si es necesario reiniciar
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+        get_checksum: no
+      register: reboot_required_file
 
-    - name: reiniciar (si es necesario)
+    - name: Reiniciar si es necesario
       ansible.builtin.reboot:
         test_command: uptime
       when: reboot_required_file.stat.exists == true
       register: reboot_result
       
-    - name: remover dependencias que no son necesarias.
+    - name: Remover dependencias que no son necesarias
       ansible.builtin.apt:
         autoremove: yes
-
-    # - name: Reiniciar el servidor solo si es necesario
-    #   reboot:
-    #     reboot_timeout: 300
-    #     test_command: uptime
-    #   register: reboot_result
 
     - name: Enviar notificación si la actualización tuvo éxito
       command: "curl -H 'Authorization: Bearer {{ token }}' -H 'Title: Actualización exitosa en {{ ansible_hostname }}' -H 'Priority: low' -d 'Actualización de paquetes exitosa 😀' https://ntfy.bnds.link/upgrade"
