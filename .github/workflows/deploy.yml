@@ -48,6 +48,7 @@ jobs:
         yq e '.ssh_key_rage' vault/ssh_keys.yml > ~/.ssh/rage_key
         yq e '.ssh_key_bm' vault/ssh_keys.yml > ~/.ssh/bm_key
         chmod 600 ~/.ssh/*_key
+      
 
     - name: Verify SSH connections
       run: |
