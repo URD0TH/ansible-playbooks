@@ -2,6 +2,8 @@
 - name: Actualizar paquetes del sistema y reiniciar si es necesario
   hosts: all
   become: yes
+  vars_files:
+    - inventory/vars/hosts_vars.yml
 
   tasks:
     - name: Actualizar todos los paquetes del sistema

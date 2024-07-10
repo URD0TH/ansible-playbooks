@@ -1,0 +1,14 @@
+all_hosts:
+  - ansible_host: ${{ secrets.S_ARK_IP }}
+    ansible_user: ${{ secrets.S_ALL_USER }}
+    ansible_hostname: ${{ secrets.S_ARK_HOSTNAME }}
+  - ansible_host: ${{ secrets.S_PRIMAL_IP }}
+    ansible_user: ${{ secrets.S_ALL_USER }}
+    ansible_hostname: ${{ secrets.S_PRIMAL_HOSTNAME }}
+  - ansible_host: ${{ secrets.S_RAGE_IP }}
+    ansible_user: ${{ secrets.S_ALL_USER }}
+    ansible_hostname: ${{ secrets.S_RAGE_HOSTNAME }}
+  - ansible_host: ${{ secrets.S_B_M_IP }}
+    ansible_user: ${{ secrets.S_B_M_USER }}
+    ansible_hostname: ${{ secrets.S_B_M_HOSTNAME }}
+  

@@ -1,0 +1,33 @@
+name: Ansible Deployment
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Tailscale
+      run: |
+        curl -fsSL https://tailscale.com/install.sh | sh
+        sudo tailscale up --authkey ${{ secrets.TAILSCALE_AUTH_KEY }}
+
+    - name: Set up Ansible
+      uses: dawidd6/action-ansible-playbook@v2
+      with:
+        playbook: playbooks/upgrade.yml
+        inventory: inventory/hosts.ini
+      env:
+        token: ${{ secrets.S_NTFY_TOKEN }}
+
+    - name: Run Ansible Playbook
+      run: ansible-playbook playbooks/upgrade.yml -i inventory/hosts.ini --extra-vars "token=${{ secrets.S_NTFY_TOKEN }}"
