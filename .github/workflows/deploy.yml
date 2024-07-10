@@ -61,6 +61,7 @@ jobs:
         ANSIBLE_HOST_KEY_CHECKING: false
       run: |
         ansible-playbook -i inventory/host.ini playbooks/upgrade.yml --vault-password-file vault_password.txt -e "token=${{ secrets.S_NTFY_TOKEN }}"
+
     - name: Enviar notificación de error
       if: failure()
       run: |
