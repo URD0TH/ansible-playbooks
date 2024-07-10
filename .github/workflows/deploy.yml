@@ -34,7 +34,7 @@ jobs:
     - name: Install Ansible
       run: |
         sudo apt update
-        sudo apt install -y ansible yq
+        sudo apt install -y ansible
 
     - name: Set up SSH keys
       env:
