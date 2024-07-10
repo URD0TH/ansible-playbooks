@@ -41,6 +41,8 @@ jobs:
         VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
       run: |
         echo "$VAULT_PASSWORD" > vault_password.txt
+        chmod -x vault_password.txt
+        ls -l vault_password.txt
         ansible-vault decrypt --vault-password-file vault_password.txt vault/ssh_keys.yml
         mkdir -p ~/.ssh
         yq e '.ssh_key_ark' vault/ssh_keys.yml > ~/.ssh/ark_key
