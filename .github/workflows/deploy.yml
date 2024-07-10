@@ -8,7 +8,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 5 * * 2,6 America/Santiago'
+    - cron: '0 8 * * 2,6'
 
 jobs:
   deploy:
