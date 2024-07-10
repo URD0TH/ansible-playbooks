@@ -1,0 +1,16 @@
+ansible-playbooks/
+┣ .github/
+┃ ┗ workflows/
+┃   ┗ deploy.yml
+┣ inventory/
+┃ ┣ vars/
+┃ ┃ ┗ hosts_vars.yml
+┃ ┗ host.ini
+┣ playbooks/
+┃ ┣ reboot.yml
+┃ ┣ test.yml
+┃ ┗ upgrade.yml
+┣ vault/
+┃ ┗ ssh_keys.yml
+┣ estructura.tree
+┗ README.md

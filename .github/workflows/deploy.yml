@@ -7,6 +7,8 @@ on:
   pull_request:
     branches:
       - main
+  schedule:
+    - cron: '0 5 * * 2,6 America/Santiago'
 
 jobs:
   deploy:
@@ -16,16 +18,65 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Notify start
+      run: |
+        curl -H "Authorization: Bearer ${{ secrets.S_NTFY_TOKEN }}" \
+             -H "Title: Iniciando actualización" \
+             -H "Priority: default" \
+             -d "Iniciando proceso de actualización en GitHub Actions" \
+             https://ntfy.bnds.link/NJWeS1A7FZHj5bKQ
+
     - name: Set up Tailscale
       run: |
         curl -fsSL https://tailscale.com/install.sh | sh
         sudo tailscale up --authkey ${{ secrets.TAILSCALE_AUTH_KEY }}
 
+    - name: Install Ansible
+      run: |
+        sudo apt update
+        sudo apt install -y ansible yq
+
+    - name: Set up SSH keys
+      env:
+        VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+      run: |
+        echo "$VAULT_PASSWORD" > vault_password.txt
+        ansible-vault decrypt --vault-password-file vault_password.txt vault/ssh_keys.yml
+        mkdir -p ~/.ssh
+        yq e '.ssh_key_ark' vault/ssh_keys.yml > ~/.ssh/ark_key
+        yq e '.ssh_key_primal' vault/ssh_keys.yml > ~/.ssh/primal_key
+        yq e '.ssh_key_rage' vault/ssh_keys.yml > ~/.ssh/rage_key
+        yq e '.ssh_key_bm' vault/ssh_keys.yml > ~/.ssh/bm_key
+        chmod 600 ~/.ssh/*_key
+
+    - name: Verify SSH connections
+      run: |
+        ansible all -i inventory/host.ini -m ping
+
     - name: Run Ansible Playbook
-      uses: dawidd6/action-ansible-playbook@v2
-      with:
-        playbook: playbooks/upgrade.yml
-        directory: ./
-        inventory: inventory/hosts.ini
-        extra_vars: |
-          token: ${{ secrets.S_NTFY_TOKEN }}
+      env:
+        ANSIBLE_HOST_KEY_CHECKING: false
+      run: |
+        ansible-playbook -i inventory/host.ini playbooks/upgrade.yml --vault-password-file vault_password.txt -e "token=${{ secrets.S_NTFY_TOKEN }}"
+    - name: Enviar notificación de error
+      if: failure()
+      run: |
+        curl -H "Authorization: Bearer ${{ secrets.S_NTFY_TOKEN }}" \
+             -H "Title: Error en GitHub Actions" \
+             -H "Priority: high" \
+             -d "Error en el proceso de actualización en GitHub Actions 😟" \
+             https://ntfy.bnds.link/NJWeS1A7FZHj5bKQ
+
+    - name: Clean up
+      run: |
+        rm -f vault_password.txt
+        rm -f ~/.ssh/*_key
+
+    - name: Notify end
+      if: always()
+      run: |
+        curl -H "Authorization: Bearer ${{ secrets.S_NTFY_TOKEN }}" \
+             -H "Title: Finalizada GitHub Actions actualización" \
+             -H "Priority: default" \
+             -d "Proceso de actualización en GitHub Actions finalizado" \
+             https://ntfy.bnds.link/NJWeS1A7FZHj5bKQ
