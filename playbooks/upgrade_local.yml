@@ -1,0 +1,44 @@
+---
+- name: Actualizar paquetes del sistema y reiniciar si es necesario
+  hosts: all
+  become: yes
+  # vars_files:
+  #   - inventory/vars/hosts_vars.yml
+
+  tasks:
+    - name: Actualizar todos los paquetes del sistema
+      apt:
+        update_cache: yes
+        upgrade: yes
+      register: update_result
+
+    - name: Verificar si es necesario reiniciar
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+        get_checksum: no
+      register: reboot_required_file
+
+    - name: Reiniciar si es necesario
+      ansible.builtin.reboot:
+        test_command: uptime
+      when: reboot_required_file.stat.exists == true
+      
+    - name: Remover dependencias que no son necesarias
+      ansible.builtin.apt:
+        autoremove: yes
+
+    - name: Enviar notificación si la actualización tuvo éxito
+      command: "curl -H 'Authorization: Bearer {{ token }}' -H 'Title: Actualización exitosa en {{ ansible_hostname }}' -H 'Priority: low' -d 'Actualización de paquetes exitosa 😀' https://ntfy.bnds.link/NJWeS1A7FZHj5bKQ"
+      when: update_result.changed
+
+    - name: Enviar notificación si hubo un error en la actualización
+      command: "curl -H 'Authorization: Bearer {{ token }}' -H 'Title: Error en actualización en {{ ansible_hostname }}' -H 'Priority: high' -d 'Error al actualizar paquetes 😟' https://ntfy.bnds.link/NJWeS1A7FZHj5bKQ"
+      when: update_result.failed
+
+    - name: Enviar notificación si el reinicio fue necesario y tuvo éxito
+      command: "curl -H 'Authorization: Bearer {{ token }}' -H 'Title: Reinicio exitoso en {{ ansible_hostname }}' -H 'Priority: low' -d 'Servidor reiniciado correctamente 🔄' https://ntfy.bnds.link/NJWeS1A7FZHj5bKQ"
+      when: reboot_required_file.stat.exists == true
+
+    - name: Enviar notificación si hubo un error en el reinicio o no es necesario reinicio
+      command: "curl -H 'Authorization: Bearer {{ token }}' -H 'Title: El reinicio no es necesario o hubo error en {{ ansible_hostname }}' -H 'Priority: high' -d 'Error al reiniciar el servidor ❌ o no fue necesario' https://ntfy.bnds.link/NJWeS1A7FZHj5bKQ"
+      when: reboot_required_file.stat.exists == false
