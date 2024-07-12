@@ -41,8 +41,6 @@ jobs:
         VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
       run: |
         echo "$VAULT_PASSWORD" > vault_password.txt
-        chmod -x vault_password.txt
-        ls -l vault_password.txt
         ansible-vault decrypt --vault-password-file vault_password.txt vault/ssh_keys.yml
         mkdir -p ~/.ssh
         yq e '.ssh_key_ark' vault/ssh_keys.yml > ~/.ssh/ark_key
@@ -50,7 +48,7 @@ jobs:
         yq e '.ssh_key_rage' vault/ssh_keys.yml > ~/.ssh/rage_key
         yq e '.ssh_key_bm' vault/ssh_keys.yml > ~/.ssh/bm_key
         chmod 600 ~/.ssh/*_key
-      
+        rm vault_password.txt  # Eliminar archivo de contraseña después de su uso seguro
 
     - name: Verify SSH connections
       run: |
@@ -73,8 +71,7 @@ jobs:
 
     - name: Clean up
       run: |
-        rm -f vault_password.txt
-        rm -f ~/.ssh/*_key
+        rm -f ~/.ssh/*_key  # Eliminar claves SSH después del uso seguro
 
     - name: Notify end
       if: always()
