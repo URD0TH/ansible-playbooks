@@ -5,6 +5,7 @@
   vars:
     ntfy_url: "https://ntfy.bnds.link/NJWeS1A7FZHj5bKQ"
     ntfy_token: "{{ token }}"
+    
 
   tasks:
     - name: Bloque de actualización y verificación
